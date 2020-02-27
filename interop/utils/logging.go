@@ -24,6 +24,7 @@ func GetSSLKeyLog() (io.WriteCloser, error) {
 // GetQLOGWriter creates the QLOGDIR and returns the GetLogWriter callback
 func GetQLOGWriter() (func(connID []byte) io.WriteCloser, error) {
 	qlogDir := os.Getenv("QLOGDIR")
+	fmt.Println("GetQLOGWriter", qlogDir)
 	if len(qlogDir) == 0 {
 		return nil, nil
 	}
@@ -34,6 +35,7 @@ func GetQLOGWriter() (func(connID []byte) io.WriteCloser, error) {
 	}
 	return func(connID []byte) io.WriteCloser {
 		path := fmt.Sprintf("%s/%x.qlog", strings.TrimRight(qlogDir, "/"), connID)
+		fmt.Println("qlog path:", path)
 		f, err := os.Create(path)
 		if err != nil {
 			log.Fatalf("Failed to create qlog file %s: %s", path, err.Error())

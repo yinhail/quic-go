@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -51,6 +52,7 @@ func (r *RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 			tlsConf:  tlsConf,
 			quicConf: r.QuicConfig,
 		}
+		fmt.Printf("Created client: %#v\n", c)
 		r.clients[hostname] = c
 	}
 	r.mutex.Unlock()
@@ -62,10 +64,11 @@ func (r *RoundTripper) Close() error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	for _, c := range r.clients {
+	for id, c := range r.clients {
 		if err := c.Close(); err != nil {
 			return err
 		}
+		delete(r.clients, id)
 	}
 	return nil
 }
@@ -82,6 +85,7 @@ type client struct {
 
 func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 	c.once.Do(func() {
+		fmt.Println("DialAddr with", c.quicConf)
 		c.sess, c.dialErr = quic.DialAddr(c.hostname, c.tlsConf, c.quicConf)
 	})
 	if c.dialErr != nil {

@@ -1,6 +1,7 @@
 package qlog
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -35,6 +36,7 @@ var _ Tracer = &tracer{}
 
 // NewTracer creates a new tracer to record a qlog.
 func NewTracer(w io.WriteCloser, p protocol.Perspective, odcid protocol.ConnectionID) Tracer {
+	fmt.Println("NewTracer for", odcid)
 	return &tracer{
 		w:           w,
 		perspective: p,
@@ -46,6 +48,7 @@ func (t *tracer) Active() bool { return true }
 
 // Export writes a qlog.
 func (t *tracer) Export() error {
+	fmt.Println("Export for", t.odcid)
 	enc := gojay.NewEncoder(t.w)
 	tl := &topLevel{
 		traces: traces{
@@ -59,6 +62,7 @@ func (t *tracer) Export() error {
 	if err := enc.Encode(tl); err != nil {
 		return err
 	}
+	fmt.Println("Closing export for", t.odcid)
 	return t.w.Close()
 }
 

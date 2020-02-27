@@ -165,6 +165,7 @@ func dialContext(
 	use0RTT bool,
 	createdPacketConn bool,
 ) (quicSession, error) {
+	fmt.Printf("config: %#v\n", config)
 	if tlsConf == nil {
 		return nil, errors.New("quic: tls.Config not set")
 	}
@@ -178,10 +179,14 @@ func dialContext(
 		return nil, err
 	}
 	c.packetHandlers = packetHandlers
+	fmt.Printf("config 2: %#v\n", c.config)
 
 	var qlogger qlog.Tracer
+	fmt.Printf("GetLogWriter: %#v\n", c.config.GetLogWriter == nil)
 	if c.config.GetLogWriter != nil {
-		if w := c.config.GetLogWriter(c.destConnID); w != nil {
+		w := c.config.GetLogWriter(c.destConnID)
+		fmt.Println("got log writer:", w)
+		if w != nil {
 			qlogger = qlog.NewTracer(w, protocol.PerspectiveClient, c.destConnID)
 		}
 	}
