@@ -764,7 +764,7 @@ func (s *session) handleSinglePacket(p *receivedPacket, hdr *wire.Header) bool /
 			// Sealer for this encryption level not yet available.
 			// Try again later.
 			wasQueued = true
-			s.tryQueueingUndecryptablePacket(p)
+			s.tryQueueingUndecryptablePacket(p, hdr)
 		case wire.ErrInvalidReservedBits:
 			s.closeLocal(qerr.Error(qerr.ProtocolViolation, err.Error()))
 		default:
@@ -1494,7 +1494,7 @@ func (s *session) scheduleSending() {
 	}
 }
 
-func (s *session) tryQueueingUndecryptablePacket(p *receivedPacket) {
+func (s *session) tryQueueingUndecryptablePacket(p *receivedPacket, hdr *wire.Header) {
 	if s.handshakeComplete {
 		s.logger.Debugf("Received undecryptable packet from %s after the handshake (%d bytes)", p.remoteAddr.String(), len(p.data))
 		return
@@ -1504,6 +1504,9 @@ func (s *session) tryQueueingUndecryptablePacket(p *receivedPacket) {
 		return
 	}
 	s.logger.Infof("Queueing packet (%d bytes) for later decryption", len(p.data))
+	if s.qlogger != nil {
+		s.qlogger.BufferedPacket(p.rcvTime, qlog.PacketTypeFromHeader(hdr))
+	}
 	s.undecryptablePackets = append(s.undecryptablePackets, p)
 }
 

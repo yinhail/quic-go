@@ -263,5 +263,16 @@ var _ = Describe("Tracer", func() {
 			Expect(ev).To(HaveKeyWithValue("packet_number", "42"))
 			Expect(ev).To(HaveKeyWithValue("trigger", "reordering_threshold"))
 		})
+
+		It("records buffered packets", func() {
+			now := time.Now()
+			tracer.BufferedPacket(now, PacketTypeHandshake)
+			t, category, eventName, ev := exportAndParse()
+			Expect(t).To(BeTemporally("~", now, time.Millisecond))
+			Expect(category).To(Equal("transport"))
+			Expect(eventName).To(Equal("packet_buffered"))
+			Expect(ev).To(HaveKeyWithValue("packet_type", "handshake"))
+			Expect(ev).To(HaveKeyWithValue("trigger", "keys_unavailable"))
+		})
 	})
 })
