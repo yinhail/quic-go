@@ -21,4 +21,14 @@ var _ = Describe("Types", func() {
 		Expect(PacketTypeRetry.String()).To(Equal("retry"))
 		Expect(PacketTypeVersionNegotiation.String()).To(Equal("version_negotiation"))
 	})
+
+	It("has a string representation for the packet drop reason", func() {
+		Expect(PacketDropKeyUnavailable.String()).To(Equal("key_unavailable"))
+		Expect(PacketDropUnknownConnectionID.String()).To(Equal("unknown_connection_id"))
+		Expect(PacketDropHeaderParseError.String()).To(Equal("header_parse_error"))
+		Expect(PacketDropPayloadDecryptError.String()).To(Equal("payload_decrypt_error"))
+		Expect(PacketDropProtocolViolation.String()).To(Equal("protocol_violation"))
+		Expect(PacketDropDOSPrevention.String()).To(Equal("dos_prevention"))
+		Expect(PacketDropUnsupportedVersion.String()).To(Equal("unsupported_version"))
+	})
 })

@@ -117,3 +117,43 @@ func (r PacketLossReason) String() string {
 		panic("unknown loss reason")
 	}
 }
+
+type PacketDropReason uint8
+
+const (
+	// PacketDropKeyUnavailable: when a packet is dropped because keys are unavailable
+	PacketDropKeyUnavailable PacketDropReason = iota
+	// PacketDropUnknownConnectionID: when a packet is dropped because the connection ID is unknown
+	PacketDropUnknownConnectionID
+	// PacketDropHeaderParseError: when a packet is dropped because header parsing failed
+	PacketDropHeaderParseError
+	// PacketDropPayloadDecryptError: when a packet is dropped because decrypting the payload failed
+	PacketDropPayloadDecryptError
+	// PacketDropProtocolViolation: when a packet is dropped due to a protocol violation
+	PacketDropProtocolViolation
+	// PacketDropDOSPrevention: when a packet is dropped to mitigate a DoS attack
+	PacketDropDOSPrevention
+	// PacketDropUnsupportedVersion: when a packet is dropped because the version is not supported
+	PacketDropUnsupportedVersion
+)
+
+func (r PacketDropReason) String() string {
+	switch r {
+	case PacketDropKeyUnavailable:
+		return "key_unavailable"
+	case PacketDropUnknownConnectionID:
+		return "unknown_connection_id"
+	case PacketDropHeaderParseError:
+		return "header_parse_error"
+	case PacketDropPayloadDecryptError:
+		return "payload_decrypt_error"
+	case PacketDropProtocolViolation:
+		return "protocol_violation"
+	case PacketDropDOSPrevention:
+		return "dos_prevention"
+	case PacketDropUnsupportedVersion:
+		return "unsupported_version"
+	default:
+		panic("unknown packet drop reason")
+	}
+}

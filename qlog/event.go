@@ -209,3 +209,19 @@ func (e eventPacketLost) MarshalJSONObject(enc *gojay.Encoder) {
 	enc.StringKey("packet_number", toString(int64(e.PacketNumber)))
 	enc.StringKey("trigger", e.Trigger.String())
 }
+
+type eventPacketDropped struct {
+	PacketType PacketType
+	PacketSize protocol.ByteCount
+	Trigger    PacketDropReason
+}
+
+func (e eventPacketDropped) Category() category { return categoryTransport }
+func (e eventPacketDropped) Name() string       { return "packet_dropped" }
+func (e eventPacketDropped) IsNil() bool        { return false }
+
+func (e eventPacketDropped) MarshalJSONObject(enc *gojay.Encoder) {
+	enc.StringKey("packet_type", e.PacketType.String())
+	enc.Uint64Key("packet_size", uint64(e.PacketSize))
+	enc.StringKey("trigger", e.Trigger.String())
+}
